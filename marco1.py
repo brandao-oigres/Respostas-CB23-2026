@@ -117,13 +117,33 @@ def etapa3() -> None:
     # (a) Memória: imprima uma tabela com estrutura, bytes por elemento, bytes totais e a
     #     razão em relação à lista.
     memoria = medir_memoria(contagens)
-    _todo("3(a) tabela")
+    print(f"{'Estrutura':<15} {'Bytes/elem.':>12} {'Bytes totais':>15} {'Razão/lista':>12}")
+
+    tamanhos_elemento = {
+        "list": memoria["list"] / n,
+        "array('H')": 2,
+        "uint16": np.dtype(np.uint16).itemsize,
+        "int32": np.dtype(np.int32).itemsize,
+        "int64": np.dtype(np.int64).itemsize,
+        "float32": np.dtype(np.float32).itemsize,
+        "float64": np.dtype(np.float64).itemsize,
+    }
+
+    for estrutura, total in memoria.items():
+        bytes_elemento = tamanhos_elemento[estrutura]
+        razao = memoria["list"] /total
+        print(f"{estrutura:<15} {bytes_elemento:>12.2f} {total:>15} {razao:>12.2f}")
     assert memoria["uint16"] == 2_000_000
     assert memoria["list"] > 10 * memoria["uint16"]
 
     # (b) Tempo: imprima uma tabela com o tempo (ms) e a aceleração em relação ao laço.
     tempos = medir_tempos(contagens, k=10)
-    _todo("3(b) tabela")
+    print(f"\n{'Método':<15} {'Tempo (ms)':>12} {'Aceleração':>12}")
+
+    for metodo, tempo in tempos.items():
+        tempo_ms = tempo * 1000
+        aceleracao = tempos["laço"] /tempo
+        print(f"{metodo:<15} {tempo_ms:>12.2f} {aceleracao:>12.2f}")
     assert tempos["laço"] / tempos["vetorizado"] >= 5
 
     # (c) Tipos e overflow: imprima os dois resultados.
